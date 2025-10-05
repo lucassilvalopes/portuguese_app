@@ -26,7 +26,7 @@
     </div>
     <div class="col text-center q-pt-lg q-px-md">
       <q-input
-        v-model="myText"
+        v-model="definition"
         type="textarea"
         rows="19"
         filled
@@ -46,8 +46,7 @@ export default {
   data() {
     return {
       text: '',
-      myText: `This is a multiline text.
-      The user can see this, but not edit it.`
+      definition: ''
     }
   },
   methods: {
@@ -89,7 +88,7 @@ export default {
           
           // Extract the word and update the component data.
           this.wordAtCursor = text.substring(start, end);
-          console.log('Word at cursor:', this.wordAtCursor);
+          this.definition = this.wordAtCursor;
         }
       }
     }
