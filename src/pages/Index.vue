@@ -1,5 +1,6 @@
 <template>
   <q-page class="flex column">
+    <div class="column" style="height: 100%">
     <div class="col q-pt-lg q-px-md">
         <q-input
           v-model="text"
@@ -7,6 +8,7 @@
           type="textarea"
           rows="19"
           dark
+          @click="getWord"
         >
         </q-input>
     </div>
@@ -31,6 +33,7 @@
         readonly
         dark
       />
+    </div>
     </div>
   </q-page>
 
@@ -59,6 +62,36 @@ export default {
           // Failed to copy. Handle the error.
           console.log("Failed to copy.")
         });
+    },
+    getWord(event) {
+      // Create a range object from the cursor position.
+      const range = document.caretPositionFromPoint(event.clientX, event.clientY);
+
+      if (range) {
+        const textNode = range.offsetNode;
+        const offset = range.offset;
+
+        // Ensure we clicked inside a textarea.
+        if (textNode.nodeType === Node.ELEMENT_NODE && textNode.tagName === 'TEXTAREA') {
+          const text = textNode.value;
+          
+          // Find the start of the word.
+          let start = offset;
+          while (start > 0 && /\S/.test(text[start - 1])) {
+            start--;
+          }
+          
+          // Find the end of the word.
+          let end = offset;
+          while (end < text.length && /\S/.test(text[end])) {
+            end++;
+          }
+          
+          // Extract the word and update the component data.
+          this.wordAtCursor = text.substring(start, end);
+          console.log('Word at cursor:', this.wordAtCursor);
+        }
+      }
     }
   }
 }
