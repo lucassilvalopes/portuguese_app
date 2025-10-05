@@ -101,8 +101,10 @@ export default {
           this.wordAtCursor = text.substring(start, end);
           // this.definition = this.wordAtCursor;
           
+          let processedWord = this.wordAtCursor.toLowerCase().replace(/[,.]*$/, '')
+
           this.db.transaction(tx => {
-            tx.executeSql('SELECT significado FROM dicio WHERE palavra = ?', [this.wordAtCursor], (tx, res) => {
+            tx.executeSql('SELECT significado FROM dicio WHERE palavra = ?', [processedWord], (tx, res) => {
               if (res.rows.length > 0) {
                 this.definition = res.rows.item(0).significado;
               } else {
