@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import { copyToClipboard } from 'quasar';
 export default {
   name: 'PageIndex',
   data() {
@@ -48,7 +49,16 @@ export default {
   },
   methods: {
     copy(){
-      console.log("pressed the copy button")
+      console.log("Pressed the copy button.")
+      copyToClipboard(this.text)
+        .then(() => {
+          // Success! Optionally, show a notification or toast
+          console.log("Copied successfully.")
+        })
+        .catch(() => {
+          // Failed to copy. Handle the error.
+          console.log("Failed to copy.")
+        });
     }
   }
 }
