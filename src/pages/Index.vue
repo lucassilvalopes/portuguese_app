@@ -41,6 +41,7 @@
 
 <script>
 import { copyToClipboard } from 'quasar';
+
 export default {
   name: 'PageIndex',
   data() {
@@ -49,7 +50,17 @@ export default {
       definition: ''
     }
   },
+  mounted() {
+    document.addEventListener('deviceready', this.initDB, false);
+  },
   methods: {
+    initDB() {
+      this.db = window.sqlitePlugin.openDatabase({
+        name: 'mini_dicio_livre_conjugacoes.db',
+        location: 'default',
+        createFromLocation: 1 
+      })
+    },
     copy(){
       console.log("Pressed the copy button.")
       copyToClipboard(this.text)
@@ -88,7 +99,20 @@ export default {
           
           // Extract the word and update the component data.
           this.wordAtCursor = text.substring(start, end);
-          this.definition = this.wordAtCursor;
+          // this.definition = this.wordAtCursor;
+          
+          this.db.transaction(tx => {
+            tx.executeSql('SELECT significado FROM dicio WHERE palavra = ?', [this.wordAtCursor], (tx, res) => {
+              if (res.rows.length > 0) {
+                this.definition = res.rows.item(0).significado;
+              } else {
+                this.definition = 'Not Found';
+              }
+            });
+          }, err => {
+            console.error('SELECT error:', err.message);
+          });
+
         }
       }
     }
