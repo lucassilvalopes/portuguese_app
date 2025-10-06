@@ -6,7 +6,7 @@
           v-model="text"
           filled
           type="textarea"
-          rows="19"
+          rows="8"
           dark
           @click="getWord"
         >
@@ -28,7 +28,7 @@
       <q-input
         v-model="definition"
         type="textarea"
-        rows="19"
+        rows="8"
         filled
         readonly
         dark
