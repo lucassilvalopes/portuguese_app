@@ -101,18 +101,30 @@ export default {
           this.wordAtCursor = text.substring(start, end);
           // this.definition = this.wordAtCursor;
           
-          let processedWord = this.wordAtCursor.toLowerCase().replace(/[,.]*$/, '')
+          let processedWord = this.wordAtCursor.toLowerCase().replace(/[,.?;:!'"]*$/, '').replace(/^['"]*/, '')
 
           this.db.transaction(tx => {
             tx.executeSql('SELECT significado FROM dicio WHERE palavra = ?', [processedWord], (tx, res) => {
-              if (res.rows.length > 0) {
-                this.definition = res.rows.item(0).significado;
-              } else {
-                this.definition = 'Not Found';
+                if (res.rows.length > 0) {
+                  this.definition = res.rows.item(0).significado;
+                } else if (processedWord.endsWith('s')) {
+                  tx.executeSql('SELECT significado FROM dicio WHERE palavra = ?', [processedWord.slice(0, -1)], (tx, fallbackRes) => {
+                      if (fallbackRes.rows.length > 0) {
+                        this.definition = fallbackRes.rows.item(0).significado;
+                      } else {
+                        this.definition = 'Not Found';
+                      }
+                    }, (tx, error) => {
+                      console.error('Fallback query error:', error.message);
+                    }
+                  );
+                } else {
+                  this.definition = 'Not Found';
+                }
+              }, (tx, error) => {
+                console.error('Primary query error:', error.message);
               }
-            });
-          }, err => {
-            console.error('SELECT error:', err.message);
+            );
           });
 
         }
