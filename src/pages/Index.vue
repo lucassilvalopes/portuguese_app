@@ -56,7 +56,7 @@ export default {
   methods: {
     initDB() {
       this.db = window.sqlitePlugin.openDatabase({
-        name: 'mini_dicio_livre_conjugacoes.db',
+        name: 'mini_dicio_livre_flexoes.db',
         location: 'default',
         createFromLocation: 1 
       })
@@ -105,26 +105,14 @@ export default {
 
           this.db.transaction(tx => {
             tx.executeSql('SELECT significado FROM dicio WHERE palavra = ?', [processedWord], (tx, res) => {
-                if (res.rows.length > 0) {
-                  this.definition = res.rows.item(0).significado;
-                } else if (processedWord.endsWith('s')) {
-                  tx.executeSql('SELECT significado FROM dicio WHERE palavra = ?', [processedWord.slice(0, -1)], (tx, fallbackRes) => {
-                      if (fallbackRes.rows.length > 0) {
-                        this.definition = fallbackRes.rows.item(0).significado;
-                      } else {
-                        this.definition = 'Not Found';
-                      }
-                    }, (tx, error) => {
-                      console.error('Fallback query error:', error.message);
-                    }
-                  );
-                } else {
-                  this.definition = 'Not Found';
-                }
-              }, (tx, error) => {
-                console.error('Primary query error:', error.message);
+              if (res.rows.length > 0) {
+                this.definition = res.rows.item(0).significado;
+              } else {
+                this.definition = 'Not Found';
               }
-            );
+            });
+          }, err => {
+            console.error('SELECT error:', err.message);
           });
 
         }
